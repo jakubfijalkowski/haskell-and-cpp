@@ -10,6 +10,7 @@ main = defaultMainWithHooks simpleUserHooks
   {
     preConf = makeExtLib
   , confHook = \a f -> confHook simpleUserHooks a f >>= updateExtraLibDirs
+  , postClean = cleanExtLib
   }
 
 makeExtLib :: Args -> ConfigFlags -> IO HookedBuildInfo
@@ -35,3 +36,8 @@ updateExtraLibDirs localBuildInfo = do
             }
         }
     }
+
+cleanExtLib :: Args -> CleanFlags -> PackageDescription -> () -> IO ()
+cleanExtLib _ flags _ _ =
+    let verbosity = fromFlag $ cleanVerbosity flags
+    in rawSystemExit verbosity "env" ["make", "--directory=ext_lib", "clean"]
