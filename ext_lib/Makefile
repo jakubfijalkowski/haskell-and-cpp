@@ -1,6 +1,6 @@
 CXX      ?= g++
 AR       ?= ar
-CXXFLAGS ?= -Wall -std=c++11
+CXXFLAGS ?= -Wall -std=c++11 -fPIC
 
 all: lib/libext.a
 
