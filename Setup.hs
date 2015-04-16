@@ -10,6 +10,7 @@ main = defaultMainWithHooks simpleUserHooks
   {
     preConf = makeExtLib
   , confHook = \a f -> confHook simpleUserHooks a f >>= updateExtraLibDirs
+  , postCopy = copyExtLib
   , postClean = cleanExtLib
   }
 
@@ -36,6 +37,14 @@ updateExtraLibDirs localBuildInfo = do
             }
         }
     }
+
+copyExtLib :: Args -> CopyFlags -> PackageDescription -> LocalBuildInfo -> IO ()
+copyExtLib _ flags pkg_descr lbi = do
+    let libPref = libdir . absoluteInstallDirs pkg_descr lbi
+                . fromFlag . copyDest
+                $ flags
+    let verbosity = fromFlag $ copyVerbosity flags
+    rawSystemExit verbosity "cp" ["ext_lib/lib/libext.a", libPref]
 
 cleanExtLib :: Args -> CleanFlags -> PackageDescription -> () -> IO ()
 cleanExtLib _ flags _ _ =
